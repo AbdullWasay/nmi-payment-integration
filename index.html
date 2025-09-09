@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NMI Payment Gateway Integration Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: white;
+            color: #0f172a;
+            line-height: 1.6;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            width: 320px;
+            background-color: #0f172a;
+            color: white;
+            padding: 0;
+            overflow-y: auto;
+            border-right: 1px solid #e2e8f0;
+        }
+        
+        .sidebar-header {
+            padding: 24px 20px;
+            border-bottom: 1px solid #334155;
+            background-color: #0f172a;
+        }
+        
+        .sidebar-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: white;
+            margin: 0;
+        }
+        
+        .menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .menu li {
+            border-bottom: 1px solid #1e293b;
+        }
+        
+        .menu a {
+            display: block;
+            padding: 12px 20px;
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .menu a:hover {
+            background-color: #1e293b;
+            color: white;
+        }
+        
+        .menu a.active {
+            background-color: #3b82f6;
+            color: white;
+            font-weight: 500;
+        }
+        
+        .menu .folder > a {
+            font-weight: 500;
+            position: relative;
+        }
+        
+        .menu .folder > a:after {
+            content: '▶';
+            position: absolute;
+            right: 20px;
+            font-size: 10px;
+            transition: transform 0.2s ease;
+        }
+        
+        .menu .folder.expanded > a:after {
+            transform: rotate(90deg);
+        }
+        
+        .menu ul {
+            list-style: none;
+            background-color: #1e293b;
+            display: none;
+        }
+        
+        .menu .folder.expanded > ul {
+            display: block;
+        }
+        
+        .menu ul a {
+            padding-left: 40px;
+            font-size: 13px;
+        }
+        
+        .menu ul ul a {
+            padding-left: 60px;
+            background-color: #334155;
+        }
+        
+        .menu ul ul ul a {
+            padding-left: 80px;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 0;
+            background-color: white;
+        }
+        
+        .content-header {
+            background-color: white;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 32px 40px;
+        }
+        
+        .content-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0;
+        }
+        
+        .content-body {
+            padding: 40px;
+            max-width: 1000px;
+        }
+        
+        .section-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #0f172a;
+            margin: 32px 0 16px 0;
+        }
+        
+        .section-subtitle {
+            font-size: 18px;
+            font-weight: 500;
+            color: #475569;
+            margin: 24px 0 12px 0;
+            font-style: italic;
+        }
+        
+        .content-text {
+            font-size: 16px;
+            color: #475569;
+            margin-bottom: 24px;
+            line-height: 1.7;
+        }
+        
+        .feature-list {
+            margin: 20px 0;
+            padding-left: 0;
+        }
+        
+        .feature-item {
+            list-style: none;
+            margin: 16px 0;
+            padding-left: 24px;
+            position: relative;
+        }
+        
+        .feature-item:before {
+            content: '•';
+            color: #3b82f6;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+        
+        .feature-link {
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .feature-link:hover {
+            text-decoration: underline;
+        }
+        
+        .feature-description {
+            color: #64748b;
+            margin-top: 8px;
+            line-height: 1.6;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+            }
+            
+            .content-header {
+                padding: 20px;
+            }
+            
+            .content-body {
+                padding: 20px;
+            }
+            
+            .content-title {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="sidebar-title">Integration Portal</h1>
+            </div>
+            
+            <ul class="menu">
+                <li class="view">
+                    <a href="#integration_overview" class="active">Integration Overview</a>
+                </li>
+                
+                <li class="folder" onclick="toggleFolder(this)">
+                    <a>Three Step Redirect API</a>
+                    <ul>
+                        <li class="subfolder" onclick="toggleFolder(this)">
+                            <a>Documentation</a>
+                            <ul>
+                                <li class="view"><a href="#3step_methodology">Methodology</a></li>
+                                <li class="subfolder" onclick="toggleFolder(this)">
+                                    <a>Transaction Operations</a>
+                                    <ul>
+                                        <li class="view"><a href="#transactions_step_1">Step 1</a></li>
+                                        <li class="view"><a href="#transactions_step_2">Step 2</a></li>
+                                        <li class="view"><a href="#transactions_step_3">Step 3</a></li>
+                                        <li class="view"><a href="#transactions_additional_ops">Additional Operations</a></li>
+                                    </ul>
+                                </li>
+                                <li class="subfolder" onclick="toggleFolder(this)">
+                                    <a>Recurring Operations</a>
+                                    <ul>
+                                        <li class="view"><a href="#recurring_step_1">Step 1</a></li>
+                                        <li class="view"><a href="#recurring_step_2">Step 2</a></li>
+                                        <li class="view"><a href="#recurring_step_3">Step 3</a></li>
+                                        <li class="view"><a href="#recurring_additional_operations">Additional Operations</a></li>
+                                    </ul>
+                                </li>
+                                <li class="view"><a href="#3step_testing_info">Testing Information</a></li>
+                            </ul>
+                        </li>
+                        <li class="subfolder" onclick="toggleFolder(this)">
+                            <a>Examples</a>
+                            <ul>
+                                <li class="view"><a href="#3step_csharp">C#</a></li>
+                                <li class="view"><a href="#3step_php">PHP</a></li>
+                                <li class="view"><a href="#3step_cvphp">PHP - Customer Vault</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                
+                <li class="folder" onclick="toggleFolder(this)">
+                    <a>Payment API</a>
+                    <ul>
+                        <li class="subfolder" onclick="toggleFolder(this)">
+                            <a>Documentation</a>
+                            <ul>
+                                <li class="view"><a href="#methodology">Methodology</a></li>
+                                <li class="view"><a href="#transaction_types">Transaction Types</a></li>
+                                <li class="view"><a href="#transaction_variables">Transaction Variables</a></li>
+                                <li class="view"><a href="#testing_information">Testing Information</a></li>
+                            </ul>
+                        </li>
+                        <li class="subfolder" onclick="toggleFolder(this)">
+                            <a>Examples</a>
+                            <ul>
+                                <li class="view"><a href="#dp_php">PHP</a></li>
+                                <li class="view"><a href="#dp_csharp">C#</a></li>
+                                <li class="view"><a href="#dp_java">Java</a></li>
+                                <li class="view"><a href="#dp_python">Python</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                
+                <li class="folder" onclick="toggleFolder(this)">
+                    <a>Collect.js</a>
+                    <ul>
+                        <li class="subfolder" onclick="toggleFolder(this)">
+                            <a>Documentation</a>
+                            <ul>
+                                <li class="view"><a href="#cjs_methodology">Methodology</a></li>
+                                <li class="view"><a href="#cjs_token">The Payment Token</a></li>
+                                <li class="view"><a href="#cjs_integrationtypes">Integration Types</a></li>
+                            </ul>
+                        </li>
+                        <li class="subfolder" onclick="toggleFolder(this)">
+                            <a>Examples</a>
+                            <ul>
+                                <li class="view"><a href="#cjs_example_1">Simple Example</a></li>
+                                <li class="view"><a href="#cjs_example_2">Advanced Example</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                
+                <li class="folder" onclick="toggleFolder(this)">
+                    <a>Collect Checkout</a>
+                    <ul>
+                        <li class="view"><a href="#cc_methodology">Methodology</a></li>
+                        <li class="view"><a href="#cc_integration">Integration Method</a></li>
+                    </ul>
+                </li>
+                
+                <li class="folder" onclick="toggleFolder(this)">
+                    <a>Gateway.js</a>
+                    <ul>
+                        <li class="view"><a href="#gjs_methodology">Methodology</a></li>
+                        <li class="view"><a href="#gjs_gettingStarted">Getting Started</a></li>
+                        <li class="view"><a href="#gjs_testing">Testing</a></li>
+                    </ul>
+                </li>
+                
+                <li class="folder" onclick="toggleFolder(this)">
+                    <a>Webhooks</a>
+                    <ul>
+                        <li class="view"><a href="#webhooks_setup">Setting Up Webhooks</a></li>
+                        <li class="view"><a href="#webhooks_events">Events</a></li>
+                    </ul>
+                </li>
+                
+                <li class="folder" onclick="toggleFolder(this)">
+                    <a>Query API</a>
+                    <ul>
+                        <li class="view"><a href="#query_methodology">Methodology</a></li>
+                        <li class="view"><a href="#query_variables">Variables</a></li>
+                    </ul>
+                </li>
+                
+                <li class="view">
+                    <a href="#chipdna_mobile_documentation">Payment Device SDK for iOS/Android</a>
+                </li>
+                
+                <li class="view">
+                    <a href="#chipdna_winlin_documentation">Payment Device SDK for Windows/Linux</a>
+                </li>
+                
+                <li class="folder" onclick="toggleFolder(this)">
+                    <a>QuickClick Shopping Cart</a>
+                    <ul>
+                        <li class="view"><a href="#quickclick_methodology">Methodology</a></li>
+                        <li class="view"><a href="#quickclick_variables">Variables</a></li>
+                    </ul>
+                </li>
+                
+                <li class="view">
+                    <a href="#carts_authnet">Third Party Shopping Carts</a>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="main-content">
+            <div class="content-header">
+                <h1 class="content-title">NMI Payment Gateway Integration Portal</h1>
+            </div>
+            
+            <div class="content-body">
+                <h2 class="section-title">Integration Overview</h2>
+                
+                <p class="content-text">
+                    There are multiple ways to incorporate the payment gateway within a website or mobile device. These options vary based upon ease of integration, required resources, features, and additional security.
+                </p>
+                
+                <h3 class="section-title">Marketplace</h3>
+                <ul class="feature-list">
+                    <li class="feature-item">
+                        <a href="#" class="feature-link">Kount</a>
+                    </li>
+                </ul>
+                
+                <h3 class="section-title">Transaction Request APIs</h3>
+                
+                <h4 class="section-subtitle">Payment API</h4>
+                <ul class="feature-list">
+                    <li class="feature-item">
+                        <div class="feature-description">
+                            The Payment API method is the simplest integration method for both web-based and non web-based payment applications, however, merchants using this integration method should have passed a PCI vulnerability scan before use.
+                        </div>
+                    </li>
+                </ul>
+                
+                <h4 class="section-subtitle">Collect.js</h4>
+                <ul class="feature-list">
+                    <li class="feature-item">
+                        <div class="feature-description">
+                            Collect.js provides access to a popup form which securely captures payment data and generates a "token". The token is then used with the Payment API instead of raw credit card or bank account data. The popup form is technically a separate page hosted by the gateway, so no payment information touches the merchant's site. This allows merchants to minimize their PCI-compliance footprint, with minimal changes to the customer experience.
+                        </div>
+                    </li>
+                </ul>
+                
+                <h4 class="section-subtitle">Collect Checkout</h4>
+                <ul class="feature-list">
+                    <li class="feature-item">
+                        <div class="feature-description">
+                            Collect Checkout is a hosted checkout page that can be integrated into most web-based payment workflows. The checkout page lives entirely on the gateway's servers, ensuring that no payment data ever touches your environment.
+                        </div>
+                    </li>
+                </ul>
+                
+                <h4 class="section-subtitle">EMV Chip Card SDK</h4>
+                <ul class="feature-list">
+                    <li class="feature-item">
+                        <div class="feature-description">
+                            The EMV Chip Card SDK provides a comprehensive solution for processing chip card transactions in card-present environments, ensuring compliance with EMV standards and enhanced security.
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function toggleFolder(element) {
+            event.stopPropagation();
+            element.classList.toggle('expanded');
+        }
+        
+        // Add click handlers for menu items
+        document.querySelectorAll('.menu a[href]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                // Remove active class from all links
+                document.querySelectorAll('.menu a').forEach(a => a.classList.remove('active'));
+                // Add active class to clicked link
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
